@@ -1,0 +1,37 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Import Students CSV - SRMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-arrow-up me-2"></i>Bulk Import Students</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="alert alert-info">
+                    <h6 class="fw-bold mb-1"><i class="bi bi-info-circle me-1"></i>Expected CSV Format:</h6>
+                    <code>roll_no,name,course,semester,dob,email,phone</code><br>
+                    <small>Example: <code>BCS003,Deepak Verma,BCA,5,2003-05-12,deepak@example.com,9876543212</code></small>
+                </div>
+
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">{{ form.file.label.text }}</label>
+                        {{ form.file(class="form-control form-control-lg" + (" is-invalid" if form.file.errors else "")) }}
+                        {% for e in form.file.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.students_list') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary px-4") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

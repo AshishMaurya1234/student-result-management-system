@@ -1,0 +1,55 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Sign In - SRMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center pt-3 pt-md-5">
+    <div class="col-md-7 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-shield-lock-fill me-2"></i>Portal Login</h4>
+                <small class="text-white-50">Enter credentials to access the system</small>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('auth.login', next=request.args.get('next')) }}" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label for="{{ form.username.id }}" class="form-label fw-semibold">
+                            <i class="bi bi-person me-1"></i>{{ form.username.label.text }}
+                        </label>
+                        {{ form.username(class="form-control form-control-lg" + (" is-invalid" if form.username.errors else "")) }}
+                        {% for error in form.username.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ form.password.id }}" class="form-label fw-semibold">
+                            <i class="bi bi-key me-1"></i>{{ form.password.label.text }}
+                        </label>
+                        {{ form.password(class="form-control form-control-lg" + (" is-invalid" if form.password.errors else "")) }}
+                        {% for error in form.password.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-lg fw-bold") }}
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer bg-light p-3">
+                <div class="small text-muted">
+                    <strong>Demo Accounts:</strong>
+                    <ul class="mb-0 ps-3 mt-1">
+                        <li><strong>Admin:</strong> <code>admin</code> / <code>AdminPassword@123</code></li>
+                        <li><strong>Faculty:</strong> <code>faculty</code> / <code>FacultyPassword@123</code></li>
+                        <li><strong>Student:</strong> <code>2350382985</code> / <code>StudentPassword@123</code></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ title }} - SRMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-journal-bookmark me-2"></i>{{ title }}</h5>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ form.sub_code.label.text }}</label>
+                        {{ form.sub_code(class="form-control" + (" is-invalid" if form.sub_code.errors else "")) }}
+                        {% for e in form.sub_code.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ form.sub_name.label.text }}</label>
+                        {{ form.sub_name(class="form-control" + (" is-invalid" if form.sub_name.errors else "")) }}
+                        {% for e in form.sub_name.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{{ form.credits.label.text }}</label>
+                            {{ form.credits(class="form-control" + (" is-invalid" if form.credits.errors else "")) }}
+                            {% for e in form.credits.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{{ form.semester.label.text }}</label>
+                            {{ form.semester(class="form-select") }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">{{ form.course.label.text }}</label>
+                            {{ form.course(class="form-select") }}
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{{ url_for('admin.subjects_list') }}" class="btn btn-outline-secondary">Cancel</a>
+                        {{ form.submit(class="btn btn-primary px-4") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

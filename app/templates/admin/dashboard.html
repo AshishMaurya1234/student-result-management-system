@@ -1,0 +1,48 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Admin Overview - SRMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 mb-0 fw-bold">Admin Management Hub</h2>
+        <p class="text-muted mb-0">System configuration and academic master data</p>
+    </div>
+    <div class="btn-group">
+        <a href="{{ url_for('admin.student_create') }}" class="btn btn-primary"><i class="bi bi-person-plus-fill me-1"></i>Add Student</a>
+        <a href="{{ url_for('admin.import_students') }}" class="btn btn-outline-secondary"><i class="bi bi-file-earmark-arrow-up me-1"></i>Import CSV</a>
+        <a href="{{ url_for('admin.subject_create') }}" class="btn btn-outline-primary"><i class="bi bi-journal-plus me-1"></i>Add Subject</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card card-stat bg-primary text-white p-3">
+            <h6 class="text-uppercase small mb-1">Enrolled Students</h6>
+            <h2 class="mb-2 fw-bold">{{ stats.students_count }}</h2>
+            <a href="{{ url_for('admin.students_list') }}" class="text-white text-decoration-underline small">Manage Students →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-success text-white p-3">
+            <h6 class="text-uppercase small mb-1">BCA Subjects</h6>
+            <h2 class="mb-2 fw-bold">{{ stats.subjects_count }}</h2>
+            <a href="{{ url_for('admin.subjects_list') }}" class="text-white text-decoration-underline small">Manage Subjects →</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-info text-white p-3">
+            <h6 class="text-uppercase small mb-1">Marks Recorded</h6>
+            <h2 class="mb-2 fw-bold">{{ stats.marks_count }}</h2>
+            <span class="small text-white-50">Across all semesters</span>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-warning text-dark p-3">
+            <h6 class="text-uppercase small mb-1">Published Results</h6>
+            <h2 class="mb-2 fw-bold">{{ stats.results_count }}</h2>
+            <span class="small text-dark-50">Results finalized</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

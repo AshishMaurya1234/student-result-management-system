@@ -1,0 +1,94 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Record Marks - {{ subject.sub_code }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Record Student Evaluation</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <div><strong>Student:</strong> {{ student.name }} (<code>{{ student.roll_no }}</code>)</div>
+                    <div><strong>Subject:</strong> {{ subject.sub_code }} — {{ subject.sub_name }}</div>
+                    <div><strong>Semester:</strong> Semester {{ subject.semester }} (Credits: {{ subject.credits }})</div>
+                </div>
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ form.internal.label.text }}</label>
+                        {{ form.internal(class="form-control form-control-lg" + (" is-invalid" if form.internal.errors else "")) }}
+                        {% for e in form.internal.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        <small class="text-muted">Assessment, quizzes, assignments (0–30)</small>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">{{ form.external.label.text }}</label>
+                        {{ form.external(class="form-control form-control-lg" + (" is-invalid" if form.external.errors else "")) }}
+                        {% for e in form.external.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        <small class="text-muted">Term-End Examination (0–70)</small>
+                    </div>
+
+                    <div class="card bg-light border mb-4">
+                        <div class="card-body d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <span class="text-muted small">Computed Total:</span>
+                                <h4 class="mb-0 fw-bold" id="computed_total">0</h4>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-muted small">Grade Estimate:</span>
+                                <h4 class="mb-0 fw-bold text-primary" id="computed_grade">-</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" name="submit" value="draft" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-save me-1"></i>Save as Draft (Editable)
+                        </button>
+                        <button type="submit" name="finalize" value="finalize" class="btn btn-success btn-lg" onclick="return confirm('Warning: Finalizing locks these marks. You will not be able to edit them again. Proceed?');">
+                            <i class="bi bi-lock-fill me-1"></i>Submit & Finalize Marks
+                        </button>
+                        <a href="{{ url_for('faculty.dashboard', subject=subject.sub_code) }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const internalInput = document.getElementById('input_internal');
+    const externalInput = document.getElementById('input_external');
+    const totalDisplay = document.getElementById('computed_total');
+    const gradeDisplay = document.getElementById('computed_grade');
+
+    function calculateGrade(total) {
+        if (total >= 85) return 'A+';
+        if (total >= 75) return 'A';
+        if (total >= 65) return 'B+';
+        if (total >= 55) return 'B';
+        if (total >= 50) return 'C';
+        if (total >= 40) return 'D';
+        return 'F';
+    }
+
+    function updateLiveScore() {
+        const internal = parseInt(internalInput.value) || 0;
+        const external = parseInt(externalInput.value) || 0;
+        const total = internal + external;
+        totalDisplay.innerText = total;
+        gradeDisplay.innerText = calculateGrade(total);
+    }
+
+    internalInput.addEventListener('input', updateLiveScore);
+    externalInput.addEventListener('input', updateLiveScore);
+    updateLiveScore();
+</script>
+{% endblock %}

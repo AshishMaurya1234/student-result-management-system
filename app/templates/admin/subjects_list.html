@@ -1,0 +1,48 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Manage Subjects - SRMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 mb-0 fw-bold">Curriculum & Subjects</h2>
+        <p class="text-muted mb-0">Master catalog of subjects, credit weights, and semester mappings</p>
+    </div>
+    <a href="{{ url_for('admin.subject_create') }}" class="btn btn-primary"><i class="bi bi-journal-plus me-1"></i>New Subject</a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Subject Code</th>
+                    <th>Subject Title</th>
+                    <th>Semester</th>
+                    <th>Credit Hours</th>
+                    <th>Course</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sub in subjects %}
+                <tr>
+                    <td><code>{{ sub.sub_code }}</code></td>
+                    <td class="fw-semibold">{{ sub.sub_name }}</td>
+                    <td><span class="badge bg-primary">Semester {{ sub.semester }}</span></td>
+                    <td><strong>{{ sub.credits }}</strong> Credits</td>
+                    <td>{{ sub.course }}</td>
+                    <td class="text-end">
+                        <a href="{{ url_for('admin.subject_edit', sub_code=sub.sub_code) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <form method="POST" action="{{ url_for('admin.subject_delete', sub_code=sub.sub_code) }}" class="d-inline" onsubmit="return confirm('Deleting this subject will remove all marks awarded under it. Proceed?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
