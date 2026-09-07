@@ -1,0 +1,92 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Result Generation Manager - SRMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 mb-0 fw-bold">Semester Result Engine</h2>
+        <p class="text-muted mb-0">Compute credit-weighted SGPA, verify grades, and publish marksheets</p>
+    </div>
+    <form method="POST" action="{{ url_for('admin.generate_batch_results', semester=sem_val) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="btn btn-success fw-bold" onclick="return confirm('Generate and publish results for ALL students in Semester {{ sem_val }}?');">
+            <i class="bi bi-gear-wide-connected me-1"></i>Generate All Sem {{ sem_val }} Results
+        </button>
+    </form>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('admin.results_manager') }}" class="row g-2 align-items-center">
+            <div class="col-md-9">
+                <label class="form-label fw-semibold mb-1">Select Semester to Evaluate:</label>
+                <select name="semester" class="form-select form-select-lg" onchange="this.form.submit()">
+                    {% for i in range(1, 7) %}
+                        <option value="{{ i }}" {% if sem_val == i %}selected{% endif %}>Semester {{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-grid pt-md-4">
+                <button type="submit" class="btn btn-dark btn-lg"><i class="bi bi-filter me-1"></i>View Class</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Roll Number</th>
+                    <th>Full Name</th>
+                    <th class="text-center">Current SGPA</th>
+                    <th class="text-center">Percentage</th>
+                    <th class="text-center">Academic Status</th>
+                    <th class="text-end">Result Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in student_data %}
+                <tr>
+                    <td><code>{{ item.student.roll_no }}</code></td>
+                    <td class="fw-semibold">{{ item.student.name }}</td>
+                    {% if item.result %}
+                        <td class="text-center fw-bold fs-5 text-primary">{{ item.result.sgpa }}</td>
+                        <td class="text-center">{{ item.result.percentage }}%</td>
+                        <td class="text-center">
+                            <span class="badge bg-{{ 'success' if item.result.status == 'PASS' else 'danger' }} fs-6">
+                                {{ item.result.status }}
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <form method="POST" action="{{ url_for('admin.generate_single_result', roll_no=item.student.roll_no, semester=sem_val) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-arrow-repeat me-1"></i>Recalculate
+                                </button>
+                            </form>
+                        </td>
+                    {% else %}
+                        <td colspan="3" class="text-center text-muted fst-italic">Result not calculated yet</td>
+                        <td class="text-end">
+                            <form method="POST" action="{{ url_for('admin.generate_single_result', roll_no=item.student.roll_no, semester=sem_val) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-calculator me-1"></i>Compute Result
+                                </button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">No students found enrolled in Semester {{ sem_val }}.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

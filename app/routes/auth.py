@@ -30,7 +30,7 @@ def login():
 
         if user and user.check_password(password):
             login_user(user, remember=False)
-            flash(f"Welcome back, {user.username}! Signed in as {user.role.title()}.", "success")
+            flash(f"Welcome, {user.username}! Signed in as {user.role.title()}.", "success")
 
             next_page = request.args.get("next")
             if next_page and not urlsplit(next_page).netloc and not urlsplit(next_page).scheme:
@@ -53,13 +53,20 @@ def logout():
 def change_password():
     form = ChangePasswordForm()
     if form.validate_on_submit():
-        if not current_user.check_password(form.old_password.data):
-            flash("Current password provided is incorrect.", "danger")
+        old_pw = form.old_password.data.strip()
+        new_pw = form.new_password.data.strip()
+
+        # Verify old password
+        if not current_user.check_password(old_pw):
+            flash("The current password entered is incorrect.", "danger")
             return render_template("auth/change_password.html", form=form)
 
-        current_user.set_password(form.new_password.data)
+        # Set new password hash
+        current_user.set_password(new_pw)
+        db.session.add(current_user)
         db.session.commit()
-        flash("Password updated successfully.", "success")
+
+        flash("Your password has been changed successfully. Please continue.", "success")
         return redirect(get_role_redirect(current_user.role))
 
     return render_template("auth/change_password.html", form=form)
