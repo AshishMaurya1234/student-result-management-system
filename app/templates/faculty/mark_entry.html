@@ -21,15 +21,15 @@
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">{{ form.internal.label.text }}</label>
-                        {{ form.internal(class="form-control form-control-lg" + (" is-invalid" if form.internal.errors else "")) }}
-                        {% for e in form.internal.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        {{ form.internal(class="form-control form-control-lg", id="input_internal") }}
+                        {% for e in form.internal.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
                         <small class="text-muted">Assessment, quizzes, assignments (0–30)</small>
                     </div>
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">{{ form.external.label.text }}</label>
-                        {{ form.external(class="form-control form-control-lg" + (" is-invalid" if form.external.errors else "")) }}
-                        {% for e in form.external.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                        {{ form.external(class="form-control form-control-lg", id="input_external") }}
+                        {% for e in form.external.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
                         <small class="text-muted">Term-End Examination (0–70)</small>
                     </div>
 
@@ -64,31 +64,40 @@
 
 {% block extra_js %}
 <script>
-    const internalInput = document.getElementById('input_internal');
-    const externalInput = document.getElementById('input_external');
-    const totalDisplay = document.getElementById('computed_total');
-    const gradeDisplay = document.getElementById('computed_grade');
+    document.addEventListener("DOMContentLoaded", function () {
+        const internalInput = document.getElementById('input_internal') || document.querySelector('input[name="internal"]');
+        const externalInput = document.getElementById('input_external') || document.querySelector('input[name="external"]');
+        const totalDisplay = document.getElementById('computed_total');
+        const gradeDisplay = document.getElementById('computed_grade');
 
-    function calculateGrade(total) {
-        if (total >= 85) return 'A+';
-        if (total >= 75) return 'A';
-        if (total >= 65) return 'B+';
-        if (total >= 55) return 'B';
-        if (total >= 50) return 'C';
-        if (total >= 40) return 'D';
-        return 'F';
-    }
+        function calculateGrade(total) {
+            if (total >= 85) return 'A+';
+            if (total >= 75) return 'A';
+            if (total >= 65) return 'B+';
+            if (total >= 55) return 'B';
+            if (total >= 50) return 'C';
+            if (total >= 40) return 'D';
+            return 'F';
+        }
 
-    function updateLiveScore() {
-        const internal = parseInt(internalInput.value) || 0;
-        const external = parseInt(externalInput.value) || 0;
-        const total = internal + external;
-        totalDisplay.innerText = total;
-        gradeDisplay.innerText = calculateGrade(total);
-    }
+        function updateLiveScore() {
+            const internal = parseInt(internalInput ? internalInput.value : 0) || 0;
+            const external = parseInt(externalInput ? externalInput.value : 0) || 0;
+            const total = internal + external;
+            if (totalDisplay) totalDisplay.innerText = total;
+            if (gradeDisplay) gradeDisplay.innerText = calculateGrade(total);
+        }
 
-    internalInput.addEventListener('input', updateLiveScore);
-    externalInput.addEventListener('input', updateLiveScore);
-    updateLiveScore();
+        if (internalInput) {
+            internalInput.addEventListener('input', updateLiveScore);
+            internalInput.addEventListener('change', updateLiveScore);
+        }
+        if (externalInput) {
+            externalInput.addEventListener('input', updateLiveScore);
+            externalInput.addEventListener('change', updateLiveScore);
+        }
+        
+        updateLiveScore();
+    });
 </script>
 {% endblock %}

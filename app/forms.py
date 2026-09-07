@@ -82,6 +82,20 @@ class StudentForm(FlaskForm):
     )
     submit = SubmitField("Save Student")
 
+class StudentProfileForm(FlaskForm):
+    """Allows students to update their own contact information."""
+    email = StringField(
+        "Email Address",
+        validators=[DataRequired(), Email(), Length(max=120)],
+        render_kw={"placeholder": "e.g. student@example.com"}
+    )
+    phone = StringField(
+        "Phone Number",
+        validators=[Optional(), Length(min=10, max=15)],
+        render_kw={"placeholder": "e.g. 9876543210"}
+    )
+    submit = SubmitField("Update Profile")
+
 class SubjectForm(FlaskForm):
     sub_code = StringField(
         "Subject Code",

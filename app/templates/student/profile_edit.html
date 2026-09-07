@@ -1,0 +1,42 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Update Contact Information - SRMS{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-gear me-2"></i>Update Contact Details</h5>
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3 p-3 bg-light rounded border">
+                    <div><strong>Student:</strong> {{ student.name }} (<code>{{ student.roll_no }}</code>)</div>
+                    <div><strong>Course:</strong> {{ student.course }} - Semester {{ student.semester }}</div>
+                </div>
+
+                <form method="POST" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">{{ form.email.label.text }}</label>
+                        {{ form.email(class="form-control form-control-lg" + (" is-invalid" if form.email.errors else "")) }}
+                        {% for e in form.email.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">{{ form.phone.label.text }}</label>
+                        {{ form.phone(class="form-control form-control-lg" + (" is-invalid" if form.phone.errors else "")) }}
+                        {% for e in form.phone.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                        <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

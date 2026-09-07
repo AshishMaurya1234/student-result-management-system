@@ -6,6 +6,7 @@ from flask_login import login_required
 from app.extensions import db
 from app.models import Student, Subject, Mark, Result, User, UserRole
 from app.forms import StudentForm, SubjectForm, CSVUploadForm
+from app.services.result_engine import ResultEngine
 from app.utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
@@ -21,6 +22,60 @@ def dashboard():
         "results_count": Result.query.count()
     }
     return render_template("admin/dashboard.html", stats=stats)
+
+# ==================== RESULT MANAGEMENT ====================
+
+@admin_bp.route("/results")
+@login_required
+@admin_required
+def results_manager():
+    semester = request.args.get("semester", "5").strip()
+    sem_val = int(semester) if semester.isdigit() else 5
+
+    students = Student.query.filter_by(semester=sem_val).order_by(Student.roll_no.asc()).all()
+    results_map = {r.roll_no: r for r in Result.query.filter_by(semester=sem_val).all()}
+
+    student_data = []
+    for s in students:
+        student_data.append({
+            "student": s,
+            "result": results_map.get(s.roll_no)
+        })
+
+    return render_template("admin/results_manager.html", sem_val=sem_val, student_data=student_data)
+
+@admin_bp.route("/results/generate/<string:roll_no>/<int:semester>", methods=["POST"])
+@login_required
+@admin_required
+def generate_single_result(roll_no, semester):
+    try:
+        res = ResultEngine.generate_and_save_result(roll_no, semester)
+        flash(f"Result generated for {roll_no}: SGPA = {res.sgpa}, Status = {res.status}.", "success")
+    except Exception as e:
+        flash(f"Could not generate result for {roll_no}: {str(e)}", "danger")
+    return redirect(url_for("admin.results_manager", semester=semester))
+
+@admin_bp.route("/results/generate-batch/<int:semester>", methods=["POST"])
+@login_required
+@admin_required
+def generate_batch_results(semester):
+    students = Student.query.filter_by(semester=semester).all()
+    success_count = 0
+    errors = []
+
+    for s in students:
+        try:
+            ResultEngine.generate_and_save_result(s.roll_no, semester)
+            success_count += 1
+        except Exception as e:
+            errors.append(f"{s.roll_no}: {str(e)}")
+
+    if success_count > 0:
+        flash(f"Batch generation completed: {success_count} student results generated.", "success")
+    if errors:
+        flash(f"Errors occurred in {len(errors)} student(s). First error: {errors[0]}", "warning")
+
+    return redirect(url_for("admin.results_manager", semester=semester))
 
 # ==================== STUDENT CRUD ====================
 
@@ -65,7 +120,6 @@ def student_create():
         )
         db.session.add(student)
 
-        # Create student login account automatically
         if not User.query.filter_by(username=student.roll_no).first():
             student_user = User(username=student.roll_no, role=UserRole.STUDENT)
             student_user.set_password(f"Student@{student.roll_no[-4:] if len(student.roll_no) >= 4 else '123'}")
@@ -83,7 +137,6 @@ def student_create():
 def student_edit(roll_no):
     student = Student.query.get_or_404(roll_no)
     form = StudentForm(obj=student)
-    # Roll number cannot be altered during edit
     form.roll_no.render_kw = {"readonly": True}
 
     if form.validate_on_submit():
