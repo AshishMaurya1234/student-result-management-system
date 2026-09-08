@@ -1,122 +1,235 @@
-﻿:root {
-    --ignou-blue: #003366;
-    --ignou-dark: #002244;
-    --ignou-gold: #c89d2d;
-    --bg-light: #f4f6f9;
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
+
+:root {
+  --font-heading: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-subtle: #eff6ff;
+  
+  --color-surface: #ffffff;
+  --color-background: #f8fafc;
+  --color-sidebar: #0f172a;
+  
+  --color-border: #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  
+  --color-text-main: #0f172a;
+  --color-text-muted: #64748b;
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
 }
 
-body {
-    background-color: var(--bg-light);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Global Reset & Viewport Constraints */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-.main-content {
-    flex: 1 0 auto;
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
-.footer {
-    flex-shrink: 0;
-    background-color: #ffffff;
-    border-top: 1px solid #e2e8f0;
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.02em;
 }
 
-.navbar-ignou {
-    background-color: var(--ignou-blue);
+/* Base Flex Shell Architecture */
+.app-wrapper {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
 }
 
-.card-stat {
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+/* Fixed-Width Modern Sidebar */
+.app-sidebar {
+  width: 260px;
+  min-width: 260px;
+  max-width: 260px;
+  background-color: var(--color-sidebar);
+  color: #94a3b8;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 1020;
 }
 
-.marksheet-table th, .marksheet-table td {
-    vertical-align: middle;
+/* Responsive Main Viewport */
+.app-main {
+  flex: 1 1 auto;
+  width: calc(100vw - 260px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
 }
 
-/* ================= EXACT A4 SINGLE-PAGE PRINT RULES ================= */
-@media print {
-    /* Hide everything by default */
-    html, body {
-        background: #ffffff !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        height: auto !important;
-        font-size: 10.5pt !important;
-        color: #000000 !important;
-    }
+.app-header {
+  height: 64px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  width: 100%;
+  flex-shrink: 0;
+}
 
-    /* Suppress all header, navbar, footer, alerts, buttons, wrapper elements */
-    header, footer, nav, .navbar, .btn, .no-print, .alert, .badge-role {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
+.app-content {
+  padding: 2rem;
+  flex: 1 0 auto;
+  width: 100%;
+}
 
-    .main-content {
-        margin: 0 !important;
-        padding: 0 !important;
-        flex: none !important;
-    }
+/* Reset inner grid negative margin overflows */
+.app-content > .container-fluid,
+.app-content > .row {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
 
-    .container {
-        max-width: 100% !important;
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
+/* Navigation Links */
+.nav-link-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+  margin-bottom: 0.25rem;
+}
 
-    /* The marksheet container becomes the root printed document */
-    .marksheet-container {
-        display: block !important;
-        visibility: visible !important;
-        border: 2px solid #000000 !important;
-        border-radius: 0 !important;
-        box-shadow: none !important;
-        padding: 12px 18px !important;
-        margin: 0 auto !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        page-break-inside: avoid !important;
-        page-break-before: avoid !important;
-        page-break-after: avoid !important;
-    }
+.nav-link-custom:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f8fafc;
+}
 
-    /* Tighten table padding to guarantee single-page fitting */
-    .marksheet-table th, .marksheet-table td {
-        padding: 4px 6px !important;
-        font-size: 10pt !important;
-        border-color: #000000 !important;
-    }
+.nav-link-custom.active {
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
 
-    .marksheet-container h3 {
-        font-size: 14pt !important;
-        margin-bottom: 2px !important;
-    }
+/* Card Tokens */
+.saas-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: box-shadow 0.2s ease;
+}
 
-    .marksheet-container h5 {
-        font-size: 11pt !important;
-        margin-bottom: 2px !important;
-    }
+.saas-card:hover {
+  box-shadow: var(--shadow-md);
+}
 
-    .marksheet-container .summary-box {
-        margin-top: 10px !important;
-        margin-bottom: 15px !important;
-        padding: 6px !important;
-    }
+/* Metric Display Indicators */
+.metric-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 9999px;
+}
 
-    .marksheet-container .signatures {
-        margin-top: 25px !important;
-        padding-top: 5px !important;
-    }
+/* Clean Data Tables */
+.modern-table-container {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+}
 
-    @page {
-        size: A4 portrait;
-        margin: 10mm 10mm 10mm 10mm;
-    }
+.table-modern {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+}
+
+.table-modern th {
+  background: #f8fafc;
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table-modern td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.table-modern tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table-modern tbody tr:hover {
+  background-color: #f1f5f9;
+}
+
+/* Primary Action Buttons */
+.btn-primary-saas {
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: 1px solid var(--color-primary);
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.875rem;
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-primary-saas:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #ffffff;
+}
+
+/* Sub-stat indicators */
+.stat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }

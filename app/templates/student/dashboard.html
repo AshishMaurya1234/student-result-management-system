@@ -1,85 +1,98 @@
 ﻿{% extends "base.html" %}
 
 {% block title %}Student Academic Portal - SRMS{% endblock %}
+{% block header_title %}Student Academic Desk{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <div>
-        <h2 class="h3 mb-0 fw-bold">Student Academic Dashboard</h2>
-        <p class="text-muted mb-0">Official performance records and semester marksheets</p>
+        <h3 class="fw-bold text-dark mb-1">Student Academic Overview</h3>
+        <p class="text-muted small mb-0">Official academic standing, enrollment parameters, and published semester marksheets</p>
     </div>
-    <a href="{{ url_for('student.profile_edit') }}" class="btn btn-outline-primary btn-sm">
-        <i class="bi bi-pencil-square me-1"></i>Update Contact Info
-    </a>
+    <div>
+        <a href="{{ url_for('student.profile_edit') }}" class="btn btn-outline-secondary btn-sm px-3 shadow-sm">
+            <i class="bi bi-pencil-square me-1"></i>Update Contact Info
+        </a>
+    </div>
 </div>
 
 <div class="row g-4 mb-4">
-    <div class="col-md-5">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-dark text-white py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-person-badge me-2"></i>Student Information</h5>
+    <!-- Student Profile Information Card -->
+    <div class="col-12 col-lg-5">
+        <div class="saas-card h-100 p-4">
+            <div class="d-flex align-items-center gap-3 pb-3 mb-3 border-bottom">
+                <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                    <i class="bi bi-person-badge-fill fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="fw-bold text-dark mb-0">{{ student.name if student else 'Student' }}</h5>
+                    <span class="text-muted small">Roll No: <code>{{ student.roll_no if student else '-' }}</code></span>
+                </div>
             </div>
-            <div class="card-body">
-                {% if student %}
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Roll Number:</strong> <code>{{ student.roll_no }}</code>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Full Name:</strong> <span class="fw-semibold">{{ student.name }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Enrolled Course:</strong> <span>{{ student.course }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Current Semester:</strong> <span class="badge bg-primary">Semester {{ student.semester }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Date of Birth:</strong> <span>{{ student.dob.strftime('%d-%b-%Y') }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Email:</strong> <span>{{ student.email }}</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between">
-                            <strong>Phone:</strong> <span>{{ student.phone or '-' }}</span>
-                        </li>
-                    </ul>
-                {% endif %}
+
+            {% if student %}
+            <div class="d-flex flex-column gap-3">
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom border-light">
+                    <span class="text-muted small fw-medium">Enrolled Course</span>
+                    <span class="fw-semibold text-dark">{{ student.course }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom border-light">
+                    <span class="text-muted small fw-medium">Current Standing</span>
+                    <span class="badge bg-primary-subtle text-primary metric-badge">Semester {{ student.semester }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom border-light">
+                    <span class="text-muted small fw-medium">Date of Birth</span>
+                    <span class="text-dark">{{ student.dob.strftime('%d %b, %Y') if student.dob else '-' }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center pb-2 border-bottom border-light">
+                    <span class="text-muted small fw-medium">Email Address</span>
+                    <span class="text-dark">{{ student.email }}</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted small fw-medium">Contact Phone</span>
+                    <span class="text-dark">{{ student.phone or 'Not Provided' }}</span>
+                </div>
             </div>
+            {% endif %}
         </div>
     </div>
 
-    <div class="col-md-7">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-dark text-white py-3">
-                <h5 class="mb-0 fw-bold"><i class="bi bi-award-fill me-2"></i>Published Semester Results</h5>
+    <!-- Published Results Table Card -->
+    <div class="col-12 col-lg-7">
+        <div class="saas-card h-100 p-0 overflow-hidden d-flex flex-column">
+            <div class="p-4 border-bottom bg-white">
+                <h5 class="fw-bold text-dark mb-0">Published Examination Results</h5>
+                <span class="text-muted small">Semester-wise grade point average and certification status</span>
             </div>
-            <div class="card-body p-0">
+
+            <div class="flex-grow-1">
                 {% if results %}
                     <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                        <table class="table-modern">
+                            <thead>
                                 <tr>
                                     <th>Semester</th>
                                     <th>SGPA</th>
                                     <th>Percentage</th>
                                     <th>Status</th>
-                                    <th class="text-end">Official Marksheet</th>
+                                    <th class="text-end">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for r in results %}
                                 <tr>
-                                    <td class="fw-bold">Semester {{ r.semester }}</td>
-                                    <td><span class="badge bg-info text-dark fs-6">{{ r.sgpa }}</span></td>
-                                    <td>{{ r.percentage }}%</td>
+                                    <td class="fw-bold text-dark">Semester {{ r.semester }}</td>
+                                    <td><span class="badge bg-primary-subtle text-primary fs-6 fw-bold">{{ r.sgpa }}</span></td>
+                                    <td class="text-secondary fw-medium">{{ r.percentage }}%</td>
                                     <td>
-                                        <span class="badge bg-{{ 'success' if r.status == 'PASS' else 'danger' }}">
-                                            {{ r.status }}
-                                        </span>
+                                        {% if r.status == 'PASS' %}
+                                            <span class="badge bg-success-subtle text-success metric-badge">PASS</span>
+                                        {% else %}
+                                            <span class="badge bg-danger-subtle text-danger metric-badge">FAIL</span>
+                                        {% endif %}
                                     </td>
                                     <td class="text-end">
-                                        <a href="{{ url_for('student.view_marksheet', semester=r.semester) }}" class="btn btn-sm btn-primary">
+                                        <a href="{{ url_for('student.view_marksheet', semester=r.semester) }}" class="btn btn-sm btn-outline-primary shadow-sm">
                                             <i class="bi bi-file-earmark-text me-1"></i>View Marksheet
                                         </a>
                                     </td>
@@ -89,9 +102,10 @@
                         </table>
                     </div>
                 {% else %}
-                    <div class="p-4 text-center text-muted">
-                        <i class="bi bi-hourglass-split display-4 d-block mb-2"></i>
-                        No published results found for your enrolment number.
+                    <div class="p-5 text-center text-muted">
+                        <i class="bi bi-hourglass-split display-4 d-block mb-3 text-secondary"></i>
+                        <h6 class="fw-semibold text-dark">No Published Results Found</h6>
+                        <p class="small text-muted mb-0">There are no finalized examination marks recorded for your roll number yet.</p>
                     </div>
                 {% endif %}
             </div>
